@@ -1,0 +1,164 @@
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-title">
+      <h1>Reviews</h1>
+      <p>Share your experience and view your past reviews</p>
+    </div>
+
+    <div class="reviews-layout">
+      <!-- ── Add Review Form ── -->
+      <div class="add-review-col">
+        <div class="card">
+          <div class="card-header"><h3>⭐ Write a Review</h3></div>
+          <div class="card-body">
+            <div class="alert alert-info" *ngIf="preAppointmentId()">
+              <span class="alert-icon">ℹ️</span>
+              Reviewing appointment #{{ preAppointmentId() }}
+            </div>
+
+            <form [formGroup]="addForm" (ngSubmit)="submitReview()">
+              <div class="form-group">
+                <label>Provider ID</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="providerId"
+                  placeholder="Provider GUID">
+                <span class="form-error" *ngIf="addForm.get('providerId')?.invalid && addForm.get('providerId')?.touched">
+                  Provider ID is required
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label>Appointment ID</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="appointmentId"
+                  placeholder="e.g. 42">
+                <span class="form-error" *ngIf="addForm.get('appointmentId')?.invalid && addForm.get('appointmentId')?.touched">
+                  Valid appointment ID required
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label>Your Rating</label>
+                <div class="star-picker">
+                  <button
+                    type="button"
+                    *ngFor="let s of starsArray"
+                    class="star-btn"
+                    [class.filled]="s <= (hoveredStar() || addForm.value.rating || 0)"
+                    (mouseenter)="setHoveredStar(s)"
+                    (mouseleave)="setHoveredStar(0)"
+                    (click)="setRating(s, 'add')">
+                    ★
+                  </button>
+                  <span class="rating-label" *ngIf="addForm.value.rating">
+                    {{ ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][addForm.value.rating!] }}
+                  </span>
+                </div>
+                <span class="form-error" *ngIf="addForm.get('rating')?.invalid && addForm.get('rating')?.touched">
+                  Please select a rating
+                </span>
+              </div>
+
+              <div class="form-group">
+                <label>Comment (optional)</label>
+                <textarea
+                  class="form-control"
+                  formControlName="comment"
+                  rows="3"
+                  placeholder="Share your experience with this provider..."></textarea>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-teal btn-block"
+                [disabled]="submitting()">
+                {{ submitting() ? 'Submitting…' : '⭐ Submit Review' }}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── My Reviews ── -->
+      <div class="my-reviews-col">
+        <h2 style="margin-bottom: 16px">My Reviews</h2>
+
+        <app-loading *ngIf="loading()" message="Loading reviews..."></app-loading>
+
+        <div class="alert alert-error" *ngIf="error()">
+          <span class="alert-icon">❌</span> {{ error() }}
+        </div>
+
+        <div class="reviews-empty" *ngIf="!loading() && myReviews().length === 0">
+          <span class="empty-icon">💬</span>
+          <p>You haven't written any reviews yet.</p>
+          <p class="text-small text-muted">Complete an appointment to leave a review.</p>
+        </div>
+
+        <div class="my-review-list" *ngIf="myReviews().length > 0">
+          <div class="review-card card" *ngFor="let r of myReviews()">
+
+            <!-- View mode -->
+            <ng-container *ngIf="editingId() !== r.reviewId">
+              <div class="review-card-header">
+                <div class="review-meta">
+                  <div class="stars-display">
+                    <span
+                      *ngFor="let s of starsArray"
+                      [class.filled]="isStarFilled(s, r.rating)">★</span>
+                  </div>
+                  <span class="review-date">{{ r.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="review-ids">
+                  <span class="badge badge-secondary">Appt #{{ r.appointmentId }}</span>
+                </div>
+              </div>
+
+              <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+              <p class="text-muted text-small" *ngIf="!r.comment">No comment added.</p>
+
+              <div class="review-actions">
+                <button class="btn btn-outline btn-sm" (click)="startEdit(r)">Edit</button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  [disabled]="deletingId() === r.reviewId"
+                  (click)="deleteReview(r.reviewId)">
+                  {{ deletingId() === r.reviewId ? 'Deleting…' : 'Delete' }}
+                </button>
+              </div>
+            </ng-container>
+
+            <!-- Edit mode -->
+            <div class="edit-mode" *ngIf="editingId() === r.reviewId">
+              <form [formGroup]="editForm">
+                <div class="form-group">
+                  <label>Rating</label>
+                  <div class="star-picker">
+                    <button
+                      type="button"
+                      *ngFor="let s of starsArray"
+                      class="star-btn"
+                      [class.filled]="s <= (editForm.value.rating || 0)"
+                      (click)="setRating(s, 'edit')">★</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Comment</label>
+                  <textarea class="form-control" formControlName="comment" rows="2"></textarea>
+                </div>
+                <div class="flex gap-8">
+                  <button type="button" class="btn btn-teal btn-sm" (click)="saveEdit(r.reviewId)">Save</button>
+                  <button type="button" class="btn btn-ghost btn-sm" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

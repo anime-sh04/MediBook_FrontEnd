@@ -1,0 +1,117 @@
+<div class="page-wrapper">
+  <div class="container">
+    <app-loading *ngIf="loading()" message="Loading provider..."></app-loading>
+
+    <div class="alert alert-error" *ngIf="error()">
+      <span class="alert-icon">❌</span> {{ error() }}
+    </div>
+
+    <ng-container *ngIf="provider() && !loading()">
+      <!-- Back -->
+      <a routerLink="/providers" class="back-link">← Back to providers</a>
+
+      <!-- Hero -->
+      <div class="provider-hero card">
+        <div class="hero-body">
+          <div class="hero-avatar">
+            <div class="avatar avatar-xl avatar-teal">
+              <span *ngIf="provider()!.fullName; else detailAvatarIcon">{{ provider()!.fullName[0] }}</span>
+              <ng-template #detailAvatarIcon><span class="avatar-icon">👤</span></ng-template>
+            </div>
+            <div class="avail-indicator" [class.on]="provider()!.isAvailable">
+              {{ provider()!.isAvailable ? 'Available' : 'Unavailable' }}
+            </div>
+          </div>
+
+          <div class="hero-info">
+            <div class="name-row">
+              <h1>{{ provider()!.fullName }}</h1>
+              <span class="badge badge-success" *ngIf="provider()!.isVerified">✓ Verified</span>
+            </div>
+            <p class="spec">{{ provider()!.specialization }}</p>
+            <p class="quals text-small text-muted" *ngIf="provider()!.qualifications">
+              {{ provider()!.qualifications }}
+            </p>
+
+            <div class="meta-grid">
+              <div class="meta-item">
+                <span class="meta-icon">🏥</span>
+                <div>
+                  <strong>{{ provider()!.clinicName }}</strong>
+                  <small>{{ provider()!.address }}</small>
+                </div>
+              </div>
+              <div class="meta-item">
+                <span class="meta-icon">📍</span>
+                <div>
+                  <strong>{{ provider()!.city }}</strong>
+                  <small>{{ provider()!.state }}</small>
+                </div>
+              </div>
+              <div class="meta-item">
+                <span class="meta-icon">📞</span>
+                <div>
+                  <span>{{ provider()!.phone }}</span>
+                  <small>Contact</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-cta">
+            <div class="fee-display">
+              <span class="fee-label">Consultation Fee</span>
+              <span class="fee-val">₹{{ provider()!.consultationFee | number }}</span>
+              <span class="fee-curr">{{ provider()!.currency }}</span>
+            </div>
+
+            <div class="rating-display" *ngIf="avgRating()">
+              <span class="stars">{{ stars(avgRating()!.avgRating) }}</span>
+              <span class="r-val">{{ avgRating()!.avgRating | number:'1.1-1' }}</span>
+              <span class="r-count">({{ avgRating()!.reviewCount }} reviews)</span>
+            </div>
+
+            <button class="btn btn-teal btn-lg btn-block" (click)="bookSlot()">
+              📅 Book Appointment
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="card" *ngIf="provider()!.bio" style="margin-top: 20px">
+        <div class="card-header"><h3>About</h3></div>
+        <div class="card-body">
+          <p>{{ provider()!.bio }}</p>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="reviews-section" style="margin-top: 28px">
+        <div class="flex justify-between items-center" style="margin-bottom: 16px">
+          <h2>Patient Reviews</h2>
+          <span class="text-muted text-small">{{ reviews().length }} review{{ reviews().length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <div class="reviews-empty" *ngIf="reviews().length === 0">
+          <span>💬</span>
+          <p>No reviews yet for this provider.</p>
+        </div>
+
+        <div class="review-grid" *ngIf="reviews().length > 0">
+          <div class="review-card card" *ngFor="let r of reviews()">
+            <div class="review-header">
+              <div class="avatar avatar-sm">{{ (r.patientName ?? 'P')[0].toUpperCase() }}</div>
+              <div class="reviewer-info">
+                <strong>{{ r.patientName ?? 'Patient' }}</strong>
+                <small>{{ r.createdAt | date:'mediumDate' }}</small>
+              </div>
+              <span class="stars" style="margin-left: auto">{{ stars(r.rating) }}</span>
+            </div>
+            <p class="review-text" *ngIf="r.comment">{{ r.comment }}</p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

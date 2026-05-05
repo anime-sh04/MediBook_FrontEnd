@@ -1,0 +1,147 @@
+<div class="page-wrapper">
+  <div class="container">
+    <!-- Page title -->
+    <div class="page-title">
+      <h1>Find a Provider</h1>
+      <p>Browse our network of verified medical professionals</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card card">
+      <div class="card-body">
+        <form [formGroup]="filterForm" class="filters-form">
+          <div class="form-group">
+            <label>Search</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="search"
+              placeholder="Name, clinic, city...">
+          </div>
+
+          <div class="form-group">
+            <label>Specialization</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="specialization"
+              placeholder="e.g. Cardiologist">
+          </div>
+
+          <div class="form-group">
+            <label>City</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="city"
+              placeholder="e.g. Mumbai">
+          </div>
+
+          <div class="form-group availability-check">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="isAvailable">
+              <span>Available only</span>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="applyFilters()">
+            🔍 Filter
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-ghost"
+            (click)="filterForm.reset(); load()">
+            Clear
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <app-loading *ngIf="loading()" message="Loading providers..."></app-loading>
+
+    <!-- Error -->
+    <div class="alert alert-error" *ngIf="error() && !loading()">
+      <span class="alert-icon">❌</span>
+      {{ error() }}
+    </div>
+
+    <!-- Results count -->
+    <div class="results-meta" *ngIf="result() && !loading()">
+      <span>{{ result()!.totalCount }} provider{{ result()!.totalCount !== 1 ? 's' : '' }} found</span>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-3" *ngIf="result() && !loading()">
+      <div class="provider-card card" *ngFor="let p of result()!.items">
+        <div class="provider-top">
+          <div class="avatar avatar-lg" [class.avatar-teal]="p.isAvailable">
+            <span *ngIf="p.fullName; else providerAvatarIcon">{{ p.fullName[0] }}</span>
+            <ng-template #providerAvatarIcon><span class="avatar-icon">👤</span></ng-template>
+          </div>
+          <div class="avail-dot" [class.available]="p.isAvailable" [title]="p.isAvailable ? 'Available' : 'Unavailable'"></div>
+        </div>
+
+        <div class="provider-info">
+          <h3>{{ p.fullName }}</h3>
+          <p class="specialization">{{ p.specialization }}</p>
+          <p class="clinic">🏥 {{ p.clinicName }}</p>
+          <p class="location">📍 {{ p.city }}, {{ p.state }}</p>
+          <p class="phone" *ngIf="p.phone">📞 <span>{{ p.phone }}</span></p>
+
+          <div class="rating-row">
+            <span class="stars">{{ stars(p.avgRating) }}</span>
+            <span class="rating-num">{{ p.avgRating | number:'1.1-1' }}</span>
+            <span class="review-count">({{ p.reviewCount }})</span>
+          </div>
+
+          <div class="fee-row">
+            <span class="fee-label">Consultation Fee</span>
+            <span class="fee-amount">₹{{ p.consultationFee | number }}</span>
+          </div>
+
+          <div class="badges-row">
+            <span class="badge" [class.badge-success]="p.isVerified" [class.badge-secondary]="!p.isVerified">
+              {{ p.isVerified ? '✓ Verified' : 'Unverified' }}
+            </span>
+            <span class="badge" [class.badge-success]="p.isAvailable" [class.badge-secondary]="!p.isAvailable">
+              {{ p.isAvailable ? 'Available' : 'Unavailable' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="provider-actions">
+          <a [routerLink]="['/providers', p.providerId]" class="btn btn-outline btn-sm">
+            View Profile
+          </a>
+          <a [routerLink]="['/providers', p.providerId, 'slots']" class="btn btn-teal btn-sm">
+            Book Slot
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="result()?.items?.length === 0 && !loading()">
+      <div class="empty-icon">🔍</div>
+      <h3>No providers found</h3>
+      <p>Try adjusting your search filters</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-wrap" *ngIf="result() && result()!.totalPages > 1">
+      <div class="pagination">
+        <button (click)="goTo(page() - 1)" [disabled]="page() === 1">‹</button>
+        <button
+          *ngFor="let p of pages()"
+          (click)="goTo(p)"
+          [class.active]="p === page()">{{ p }}</button>
+        <button (click)="goTo(page() + 1)" [disabled]="page() === result()!.totalPages">›</button>
+      </div>
+    </div>
+  </div>
+</div>

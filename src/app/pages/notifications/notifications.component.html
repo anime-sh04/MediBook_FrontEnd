@@ -1,0 +1,70 @@
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-title flex justify-between items-center">
+      <div>
+        <h1>Notifications</h1>
+        <p>Stay updated with your appointments and payments</p>
+      </div>
+      <button
+        class="btn btn-outline"
+        (click)="markAllRead()"
+        [disabled]="markingAllRead() || unread === 0">
+        {{ markingAllRead() ? 'Marking…' : '✓ Mark all read' }}
+      </button>
+    </div>
+
+    <!-- Unread count pill -->
+    <div class="unread-pill" *ngIf="unread > 0">
+      <span>🔔 {{ unread }} unread notification{{ unread !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <app-loading *ngIf="loading()" message="Loading notifications..."></app-loading>
+
+    <div class="alert alert-error" *ngIf="error()">
+      <span class="alert-icon">❌</span> {{ error() }}
+    </div>
+
+    <!-- List -->
+    <div class="notif-list" *ngIf="!loading() && notifications().length > 0">
+      <div
+        class="notif-item"
+        *ngFor="let n of notifications()"
+        [class.unread]="!n.isRead"
+        [class]="'notif-item ' + typeClass(n.type)"
+        (click)="markRead(n)">
+
+        <div class="notif-icon-wrap">
+          <span class="notif-type-icon">{{ typeIcon(n.type) }}</span>
+          <span class="unread-dot" *ngIf="!n.isRead"></span>
+        </div>
+
+        <div class="notif-content">
+          <div class="notif-header">
+            <strong>{{ n.title }}</strong>
+            <span class="notif-time">{{ n.sentAt | date:'short' }}</span>
+          </div>
+          <p>{{ n.message }}</p>
+          <div class="notif-meta">
+            <span class="badge badge-secondary">{{ n.type }}</span>
+            <span class="read-status" *ngIf="n.isRead">Read {{ n.readAt | date:'shortTime' }}</span>
+          </div>
+        </div>
+
+        <button
+          class="notif-delete"
+          title="Delete"
+          [disabled]="deletingId() === n.notificationId"
+          (click)="deleteNotif(n); $event.stopPropagation()">
+          {{ deletingId() === n.notificationId ? '…' : '✕' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!loading() && notifications().length === 0">
+      <div class="empty-icon">🔔</div>
+      <h3>No notifications</h3>
+      <p>You'll receive notifications here for appointments, payments, and reminders.</p>
+    </div>
+  </div>
+</div>

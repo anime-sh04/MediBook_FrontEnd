@@ -1,0 +1,134 @@
+<div class="page-wrapper">
+  <div class="container">
+    <div class="page-title flex justify-between items-center">
+      <div>
+        <h1>{{ isProvider() ? 'Provider Appointments' : 'My Appointments' }}</h1>
+        <p>{{ isProvider() ? 'View and complete booked appointments' : 'Manage your upcoming and past appointments' }}</p>
+      </div>
+      <a *ngIf="!isProvider()" routerLink="/providers" class="btn btn-teal">+ Book New</a>
+    </div>
+
+    <app-loading *ngIf="loading()" message="Loading appointments..."></app-loading>
+
+    <div class="alert alert-error" *ngIf="error() && !loading()">
+      <span class="alert-icon">❌</span> {{ error() }}
+    </div>
+
+    <ng-container *ngIf="!loading()">
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <button [class.active]="activeTab() === 'upcoming'" (click)="setTab('upcoming')">
+          📅 Upcoming
+          <span class="tab-count" *ngIf="upcoming.length">{{ upcoming.length }}</span>
+        </button>
+        <button [class.active]="activeTab() === 'history'" (click)="setTab('history')">
+          📋 History
+          <span class="tab-count" *ngIf="history.length">{{ history.length }}</span>
+        </button>
+      </div>
+
+      <!-- Upcoming tab -->
+      <div *ngIf="activeTab() === 'upcoming'">
+        <div class="empty-state" *ngIf="upcoming.length === 0">
+          <div class="empty-icon">📅</div>
+          <h3>No upcoming appointments</h3>
+          <p>{{ isProvider() ? 'Booked appointments will appear here' : 'Book your first appointment with a provider' }}</p>
+          <a *ngIf="!isProvider()" routerLink="/providers" class="btn btn-teal" style="margin-top: 16px">Browse Providers</a>
+        </div>
+
+        <div class="appt-list" *ngIf="upcoming.length > 0">
+          <div class="appt-card card" *ngFor="let a of upcoming">
+            <div class="appt-date-col">
+              <span class="appt-month">{{ a.appointmentDate | date:'MMM' | uppercase }}</span>
+              <span class="appt-day">{{ a.appointmentDate | date:'d' }}</span>
+              <span class="appt-year">{{ a.appointmentDate | date:'yyyy' }}</span>
+            </div>
+
+            <div class="appt-info">
+              <div class="appt-header-row">
+                <h4>{{ displayPerson(a) }}</h4>
+                <span class="badge" [ngClass]="statusClass(a.status)">{{ a.status }}</span>
+              </div>
+              <p class="appt-time">🕐 {{ formatTime(a.startTime) }} – {{ formatTime(a.endTime) }}</p>
+              <p class="appt-clinic" *ngIf="isProvider()">Patient ID: {{ a.patientId }}</p>
+              <p class="appt-clinic" *ngIf="!isProvider() && a.clinicName">🏥 {{ a.clinicName }}</p>
+              <p class="appt-notes text-small text-muted" *ngIf="a.notes">📝 {{ a.notes }}</p>
+            </div>
+
+            <div class="appt-fee">
+              <span class="fee-label">Fee</span>
+              <span class="fee-val">₹{{ (a.amount ?? a.consultationFee) | number }}</span>
+            </div>
+
+            <div class="appt-actions">
+              <a [routerLink]="['/appointments', a.appointmentId]" class="btn btn-outline btn-sm">
+                Details
+              </a>
+              <button
+                class="btn btn-success btn-sm"
+                *ngIf="isProvider() && a.status === 'Scheduled'"
+                [disabled]="completingId() === a.appointmentId"
+                (click)="complete(a)">
+                {{ completingId() === a.appointmentId ? 'Completing…' : 'Mark as Complete' }}
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                *ngIf="!isProvider() && a.status === 'Scheduled'"
+                [disabled]="cancellingId() === a.appointmentId"
+                (click)="cancel(a.appointmentId)">
+                {{ cancellingId() === a.appointmentId ? 'Cancelling…' : 'Cancel' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History tab -->
+      <div *ngIf="activeTab() === 'history'">
+        <div class="empty-state" *ngIf="history.length === 0">
+          <div class="empty-icon">📋</div>
+          <h3>No appointment history</h3>
+          <p>Your completed appointments will appear here</p>
+        </div>
+
+        <div class="appt-list" *ngIf="history.length > 0">
+          <div class="appt-card card history" *ngFor="let a of history">
+            <div class="appt-date-col muted">
+              <span class="appt-month">{{ a.appointmentDate | date:'MMM' | uppercase }}</span>
+              <span class="appt-day">{{ a.appointmentDate | date:'d' }}</span>
+              <span class="appt-year">{{ a.appointmentDate | date:'yyyy' }}</span>
+            </div>
+
+            <div class="appt-info">
+              <div class="appt-header-row">
+                <h4>{{ displayPerson(a) }}</h4>
+                <span class="badge" [ngClass]="statusClass(a.status)">{{ a.status }}</span>
+              </div>
+              <p class="appt-time">🕐 {{ formatTime(a.startTime) }} – {{ formatTime(a.endTime) }}</p>
+              <p class="appt-clinic" *ngIf="isProvider()">Patient ID: {{ a.patientId }}</p>
+              <p class="appt-clinic" *ngIf="!isProvider() && a.clinicName">🏥 {{ a.clinicName }}</p>
+            </div>
+
+            <div class="appt-fee">
+              <span class="fee-label">Paid</span>
+              <span class="fee-val">₹{{ (a.amount ?? a.consultationFee) | number }}</span>
+            </div>
+
+            <div class="appt-actions">
+              <a [routerLink]="['/appointments', a.appointmentId]" class="btn btn-outline btn-sm">
+                Details
+              </a>
+              <a
+                *ngIf="!isProvider() && a.status === 'Completed'"
+                [routerLink]="['/reviews']"
+                [queryParams]="{ appointmentId: a.appointmentId, providerId: a.providerId }"
+                class="btn btn-ghost btn-sm">
+                ⭐ Review
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: var(--cream-dark);
+  padding: 5px;
+  border-radius: var(--radius-md);
+  width: fit-content;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: .875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .18s;
+
+    &.active {
+      background: var(--white);
+      color: var(--navy);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+}
+
+.tab-count {
+  background: var(--teal);
+  color: var(--white);
+  font-size: .68rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.appt-list { display: flex; flex-direction: column; gap: 14px; }
+
+.appt-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  transition: all .2s;
+
+  &.history { opacity: .85; }
+  &:hover { box-shadow: var(--shadow-md); }
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}
+
+.appt-date-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  background: var(--navy);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+
+  .appt-month { font-size: .68rem; font-weight: 600; letter-spacing: .1em; opacity: .8; }
+  .appt-day   { font-size: 1.75rem; font-weight: 700; line-height: 1; font-family: var(--font-serif); }
+  .appt-year  { font-size: .65rem; opacity: .6; }
+
+  &.muted { background: var(--cream-dark); color: var(--text-secondary); }
+}
+
+.appt-info {
+  flex: 1;
+  .appt-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+    flex-wrap: wrap;
+    h4 { margin: 0; font-size: .9375rem; }
+  }
+  .appt-time   { font-size: .85rem; color: var(--text-secondary); margin-bottom: 2px; }
+  .appt-clinic { font-size: .82rem; color: var(--text-muted); margin-bottom: 2px; }
+  .appt-notes  { margin-top: 4px; }
+}
+
+.appt-fee {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  .fee-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+  .fee-val   { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+}
+
+.appt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 100px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  .empty-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+  h3 { color: var(--text-secondary); margin-bottom: 8px; }
+  p  { color: var(--text-muted); }
+}

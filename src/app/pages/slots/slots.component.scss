@@ -1,0 +1,112 @@
+.filters-panel { margin-bottom: 24px; }
+
+.provider-tools {
+  margin-bottom: 24px;
+}
+
+.filter-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+
+  .form-group { flex: 1; min-width: 200px; margin-bottom: 0; }
+}
+
+.provider-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+
+  .provider-banner-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    strong { color: var(--navy); font-size: .95rem; }
+    span   { color: var(--text-muted); font-size: .8rem; }
+  }
+
+  .provider-fee {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    span   { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+    strong { font-size: 1.1rem; color: var(--navy); }
+  }
+}
+
+.slots-header {
+  color: var(--text-muted);
+  font-size: .875rem;
+  margin-bottom: 16px;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.slot-card {
+  background: var(--white);
+  border: 1.5px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all .2s;
+
+  &:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  &.booked  { border-color: var(--border); opacity: .7; }
+  &.blocked { border-color: var(--border); opacity: .6; background: var(--cream); }
+}
+
+.slot-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .time-from, .time-to {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--navy);
+  }
+
+  .time-sep { color: var(--text-muted); font-size: .85rem; }
+}
+
+.slot-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .slot-fee {
+    font-weight: 700;
+    font-size: .9rem;
+    color: var(--navy);
+  }
+}
+
+.empty-state, .prompt-state {
+  text-align: center;
+  padding: 80px 24px;
+
+  .empty-icon, .prompt-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+  h3 { color: var(--text-secondary); margin-bottom: 8px; }
+  p  { color: var(--text-muted); font-size: .9rem; }
+}
+
+.slot-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
