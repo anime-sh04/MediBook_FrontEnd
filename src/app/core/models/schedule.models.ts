@@ -6,23 +6,31 @@ export interface AvailabilitySlotDto {
   slotId: number;
   providerId: string;
   providerName?: string;
-  date: string;           // yyyy-MM-dd
-  startTime: string;      // HH:mm
-  endTime: string;        // HH:mm
+
+  date: string;        // yyyy-MM-dd
+  startTime: string;   // HH:mm
+  endTime: string;     // HH:mm
+
   isBooked: boolean;
   isBlocked: boolean;
-  consultationFee: number;
-  currency: string;
+
+  price: number;
+  currency?: string;
+
   status: 'Available' | 'Booked' | 'Blocked' | 'Pending';
 }
 
 export interface AddSlotRequest {
   providerId: string;
+
   date: string;
   startTime: string;
   endTime: string;
-  consultationFee: number;
+
+  price: number;
   currency?: string;
+
+  recurrence?: string;
 }
 
 export interface AddBulkSlotsRequest {
@@ -31,11 +39,15 @@ export interface AddBulkSlotsRequest {
 
 export interface GenerateRecurringRequest {
   providerId: string;
+
   startDate: string;
   endDate: string;
+
   slotStartTime: string;
   slotEndTime: string;
+
   recurrence: 'Daily' | 'Weekly';
+
   price: number;
 }
 
@@ -43,17 +55,29 @@ export interface UpdateSlotRequest {
   date?: string;
   startTime?: string;
   endTime?: string;
-  consultationFee?: number;
+
+  price?: number;
+
+  recurrence?: string;
 }
 
 export interface BookSlotRequest {
   patientId: string;
-  paymentMethod: string;   // 'Card' | 'UPI' | 'Cash'
+  providerId: string;
+
+  // Backend expects "Mode"
+  mode: 'Card' | 'UPI' | 'Cash';
+
+  currency?: string;
   notes?: string;
+
+  serviceType?: string;
+  modeOfConsultation?: string;
 }
 
 export interface BookSlotResponse {
   slotId: number;
   correlationId: string;
-  status: string;          // 'PENDING'
+
+  status: string; // PENDING
 }
