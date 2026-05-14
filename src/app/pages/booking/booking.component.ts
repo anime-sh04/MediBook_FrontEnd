@@ -110,7 +110,8 @@ export class BookingComponent implements OnInit, OnDestroy {
 
     this.scheduleService.bookSlot(slotId, {
       patientId:     user!.id,
-      paymentMethod: this.bookingForm.value.paymentMethod!,
+      providerId: this.slot()!.providerId,
+      mode: this.bookingForm.value.paymentMethod as 'Card' | 'UPI' | 'Cash',
       notes:         this.bookingForm.value.notes || undefined
     }).subscribe({
       next: bookResponse => {

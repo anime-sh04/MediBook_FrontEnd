@@ -133,7 +133,7 @@ export class SlotsComponent implements OnInit {
       date: this.singleSlotForm.value.date!,
       startTime: this.singleSlotForm.value.startTime!,
       endTime: this.singleSlotForm.value.endTime!,
-      consultationFee: Number(this.singleSlotForm.value.consultationFee),
+      price: Number(this.singleSlotForm.value.consultationFee),
       currency: 'INR'
     });
   }
@@ -209,7 +209,7 @@ export class SlotsComponent implements OnInit {
         date,
         startTime: this.toTime(current),
         endTime: this.toTime(current + duration),
-        consultationFee: fee,
+        price: fee,
         currency: 'INR'
       });
     }

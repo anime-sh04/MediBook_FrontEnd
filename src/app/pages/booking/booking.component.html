@@ -49,7 +49,7 @@
           </div>
           <div class="detail-row fee-row-big">
             <span class="label">Consultation Fee</span>
-            <span class="value fee-big">₹{{ slot()!.consultationFee | number }}</span>
+            <span class="value fee-big">₹{{ slot()!.price | number }}</span>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
               type="button"
               class="btn btn-teal btn-lg btn-block"
               (click)="confirmBooking()">
-              🔒 Proceed to Payment — ₹{{ slot()!.consultationFee | number }}
+              🔒 Proceed to Payment — ₹{{ slot()!.price | number }}
             </button>
           </form>
         </div>

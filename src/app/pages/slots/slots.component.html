@@ -116,7 +116,7 @@
             <span class="badge" [ngClass]="{ 'badge-success': !s.isBooked && !s.isBlocked, 'badge-pending': s.status === 'Pending', 'badge-secondary': s.isBooked || s.isBlocked }">
               {{ s.isBlocked ? '🚫 Blocked' : s.isBooked ? '✓ Booked' : s.status === 'Pending' ? '⏳ Pending' : '✓ Available' }}
             </span>
-            <span class="slot-fee" *ngIf="s.consultationFee">{{ s.consultationFee | number }}</span>
+            <span class="slot-fee" *ngIf="s.price">{{ s.price | number }}</span>
           </div>
           <div class="slot-actions" *ngIf="isProviderMode()">
             <button class="btn btn-outline btn-sm" [disabled]="s.isBooked || togglingSlotId() === s.slotId" (click)="toggleBlock(s)">
