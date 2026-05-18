@@ -52,10 +52,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   markRead(n: NotificationResponse) {
     if (n.isRead) return;
-    this.notifService.markAsRead(n.notificationId).subscribe({
+    this.notifService.markAsRead(n.id).subscribe({
       next: () => {
         this.notifications.update(list =>
-          list.map(x => x.notificationId === n.notificationId ? { ...x, isRead: true } : x)
+          list.map(x => x.id === n.id ? { ...x, isRead: true } : x)
         );
       }
     });
@@ -76,11 +76,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   deleteNotif(n: NotificationResponse) {
-    this.deletingId.set(n.notificationId);
-    this.notifService.delete(n.notificationId).subscribe({
+    this.deletingId.set(n.id);
+    this.notifService.delete(n.id).subscribe({
       next: () => {
         this.notifications.update(list =>
-          list.filter(x => x.notificationId !== n.notificationId)
+          list.filter(x => x.id !== n.id)
         );
         this.deletingId.set(null);
       },
@@ -94,17 +94,18 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   typeIcon(type: string): string {
     const icons: Record<string, string> = {
+      BOOKING: '📅', PAYMENT: '💳', REMINDER: '⏰', SYSTEM: '⚙️', CANCELLATION: '❌', FOLLOWUP: '📞',
       Appointment: '📅', Payment: '💳', Reminder: '⏰', System: '⚙️'
     };
-    return icons[type] ?? '🔔';
+    return icons[type?.toUpperCase()] || icons[type] || '🔔';
   }
 
   typeClass(type: string): string {
     const classes: Record<string, string> = {
-      Appointment: 'type-appt', Payment: 'type-pay',
-      Reminder: 'type-reminder', System: 'type-sys'
+      BOOKING: 'type-appt', PAYMENT: 'type-pay', REMINDER: 'type-reminder', SYSTEM: 'type-sys', CANCELLATION: 'type-sys', FOLLOWUP: 'type-sys',
+      Appointment: 'type-appt', Payment: 'type-pay', Reminder: 'type-reminder', System: 'type-sys'
     };
-    return classes[type] ?? '';
+    return classes[type?.toUpperCase()] || classes[type] || '';
   }
 
   ngOnDestroy() { this.pollSub?.unsubscribe(); }

@@ -3,11 +3,11 @@
 // ═══════════════════════════════════════
 
 export interface NotificationResponse {
-  notificationId: string;
+  id: string;
   recipientId: string;
   title: string;
   message: string;
-  type: string;          // 'Appointment' | 'Payment' | 'Reminder' | 'System'
+  type: string;          // 'BOOKING' | 'PAYMENT' | 'REMINDER' | 'CANCELLATION' | 'FOLLOWUP'
   isRead: boolean;
   sentAt: string;
   readAt?: string;
@@ -16,6 +16,8 @@ export interface NotificationResponse {
 
 export interface SendNotificationRequest {
   recipientId: string;
+  recipientEmail?: string;
+  recipientName?: string;
   title: string;
   message: string;
   type: string;

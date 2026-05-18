@@ -53,9 +53,9 @@
         <button
           class="notif-delete"
           title="Delete"
-          [disabled]="deletingId() === n.notificationId"
+          [disabled]="deletingId() === n.id"
           (click)="deleteNotif(n); $event.stopPropagation()">
-          {{ deletingId() === n.notificationId ? '…' : '✕' }}
+          {{ deletingId() === n.id ? '…' : '✕' }}
         </button>
       </div>
     </div>

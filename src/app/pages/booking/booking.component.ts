@@ -193,6 +193,7 @@ export class BookingComponent implements OnInit, OnDestroy {
         this.step.set('success');
         this.statusMessage.set('Payment confirmed! Your appointment is booked.');
         this.notifyProviderBooked();
+        this.notifyPatientBooked();
         this.toast.success('Booking confirmed! 🎉', 'Your appointment has been scheduled.');
       },
       error: err => {
@@ -233,17 +234,71 @@ export class BookingComponent implements OnInit, OnDestroy {
     });
   }
 
+  // private notifyProviderBooked() {
+    // const providerId = this.slot()?.providerId;
   private notifyProviderBooked() {
-    const providerId = this.slot()?.providerId;
-    if (!providerId) return;
+    const providerUserId = this.provider()?.userId;
+    if (!providerUserId) {
+      console.error('Provider User ID not available for notification');
+      return;
+    }
+    console.log('Fetching provider details for notification...', providerUserId);
 
+    this.authService.getUserById(providerUserId).subscribe({
+      next: (provider) => {
+        console.log('Fetched provider details successfully:', provider);
+        console.log('NOTIF PAYLOAD', {
+          recipientId: provider.id,
+          recipientEmail: provider.email,
+          recipientName: provider.fullName,
+          type: 'BOOKING',
+          title: 'New Appointment Booked',
+          message: 'A patient has booked an appointment with you',
+          channel: 'EMAIL'
+        });
+
+        this.notificationService.send({
+          recipientId: provider.id,
+          recipientEmail: provider.email,
+          recipientName: provider.fullName,
+          type: 'BOOKING',
+          title: 'New Appointment Booked',
+          message: 'A patient has booked an appointment with you',
+          channel: 'EMAIL'
+        }).subscribe({
+          next: () => console.log('Notification successfully sent via NotificationService'),
+          error: (err) => console.error('Failed to send notification via NotificationService', err)
+        });
+
+      },
+      error: (err) => {
+        console.error('Failed to fetch provider details (getUserById) for notification', err);
+      }
+    });
+  }
+
+  private notifyPatientBooked() {
+    const user = this.authService.user();
+    if (!user) {
+      console.error('Patient user details not available for notification');
+      return;
+    }
+
+    const providerName = this.provider()?.fullName || 'the provider';
+
+    console.log('Sending notification to patient...', user.id);
     this.notificationService.send({
-      recipientId: providerId,
+      recipientId: user.id,
+      recipientEmail: user.email,
+      recipientName: user.fullName,
       type: 'BOOKING',
-      title: 'New Appointment Booked',
-      message: 'A patient has booked an appointment with you',
+      title: 'Appointment Confirmed',
+      message: `Your appointment with ${providerName} is confirmed.`,
       channel: 'EMAIL'
-    }).subscribe({ error: () => {} });
+    }).subscribe({
+      next: () => console.log('Patient notification successfully sent'),
+      error: (err) => console.error('Failed to send patient notification via NotificationService', err)
+    });
   }
 
   retryPayment() {
